@@ -65,6 +65,7 @@ function SearchButton() {
 					value={search}
 					onChange={handleSearchChange}
 					onKeyDown={handleInputEnter}
+					placeholder="Enter a College name"
 				/>
 				<button
 					className="search-section-button"
