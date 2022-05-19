@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
 	GoogleMap,
 	useJsApiLoader,
@@ -16,15 +16,20 @@ import { ColledgeDataType } from "../../common";
 import { CollegeDataContext } from "../../context";
 
 /* Utils */
-// import { calculateCenter } from "./MapSection.utils";
+import { calculateCenter } from "./MapSection.utils";
 
 const containerStyle = {
 	width: "100%",
 	height: "85vh",
 };
 
+type CenterType = {
+	lat: number;
+	lng: number;
+}
+
 // custom center of the USA (as middle as possible)
-const center = {
+const center: CenterType = {
 	lat: 38.05458,
 	lng: -98.870322,
 };
@@ -33,6 +38,8 @@ type ContentType = Partial<ColledgeDataType>;
 
 function CollegeMap() {
 	const { collegeData } = useContext(CollegeDataContext);
+	// to set the center of the map to the coordinates average of the search coordinates
+	const [mapCenter, setMapCenter] = useState<CenterType>(center);
 	// Info Window States
 	const [open, setOpen] = useState<boolean>(false);
 	const [content, setContent] = useState<ContentType>({});
@@ -48,14 +55,19 @@ function CollegeMap() {
 	};
 
 	const infoContent = <div>{content.name}</div>;
-	// const calculatedCenter = Boolean(collegeData.length) ? calculateCenter(collegeData) : center;
+
+	useEffect(() => {
+		if (collegeData.length) {
+			const newCenter = calculateCenter(collegeData);
+			setMapCenter(newCenter);
+		}
+	}, [collegeData]);
 
 	return isLoaded ? (
 		<div>
 			<GoogleMap
 				mapContainerStyle={containerStyle}
-				center={center}
-				// center={calculatedCenter}
+				center={mapCenter}
 				zoom={5}
 			>
 				{collegeData.map(({ name, lat, lng }, index) => {

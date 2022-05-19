@@ -8,14 +8,17 @@ import { ColledgeDataType } from "../../common";
 export const calculateCenter = (
 	collegeData: ColledgeDataType[]
 ): { lat: number; lng: number } => {
-	const latAve =
-		collegeData.reduce((acc, { lat }) => {
-			return acc + lat;
-		}, 0) / collegeData.length;
-	const lngAve =
-		collegeData.reduce((acc, { lng }) => {
-			return acc + lng;
-		}, 0) / collegeData.length;
+	const centerAve = collegeData.reduce(
+		(acc, { lat, lng }) => {
+			let latAve = acc.lat + lat;
+			let lngAve = acc.lng + lng;
+			return { lat: latAve, lng: lngAve };
+		},
+		{ lat: 0, lng: 0 }
+	);
 
-	return { lat: latAve, lng: lngAve };
+	return {
+		lat: centerAve.lat / collegeData.length,
+		lng: centerAve.lng / collegeData.length,
+	};
 };
